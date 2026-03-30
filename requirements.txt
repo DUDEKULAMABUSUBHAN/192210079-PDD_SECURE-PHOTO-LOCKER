@@ -1,0 +1,63 @@
+# Deployment Requirements for SMST System
+
+## 1. Backend Service (SPMDA)
+
+### Environment
+- **Server Software:** Apache HTTP Server (via XAMPP or similar)
+- **PHP Version:** 7.4 or higher (Recommended: 8.x)
+- **Database:** MySQL / MariaDB
+
+### Database Configuration
+- **Database Name:** `spmda`
+- **User:** `root` (Default for XAMPP, change for production)
+- **Password:** (Empty for default XAMPP, set a strong password for production)
+
+### Required PHP Extensions
+- `mysqli` (For database connection)
+- `json` (For API responses)
+
+### Installation Steps
+1. Place the `SPMDA` folder in the server's public directory (e.g., `htdocs` in XAMPP).
+2. Start Apache and MySQL services.
+3. Access `http://<HOST_IP>/SPMDA/setup.php` to initialize the database and tables.
+   - This script creates the `spmda` database and `users` table if they do not exist.
+4. Update `db_connect.php` with the correct database credentials if they differ from the defaults.
+
+### Network Configuration (For Android Connection)
+- Ensure the server machine has a static IP or is accessible via a hostname.
+- If using the Android Emulator, use `10.0.2.2` to access the host's localhost.
+- If using a physical device, ensure both device and server are on the same Wi-Fi network and use the server's LAN IP (e.g., `192.168.1.x`).
+
+---
+
+## 2. Android Application (SMST2)
+
+### Build Environment
+- **Android Studio:** Koala or newer recommended
+- **Gradle Version:** Compatible with AGP (Android Gradle Plugin) 8.x
+- **JDK:** Java 11
+
+### SDK Requirements
+- **Minimum SDK:** 24 (Android 7.0 Nougat)
+- **Target SDK:** 35 (Android 15)
+- **Compile SDK:** 35
+
+### Dependencies (Key Modules)
+- **UI:** Jetpack Compose (Material 3)
+- **Networking:** Retrofit 2.9.0, OkHttp 4.12.0
+- **Concurrency:** Kotlin Coroutines
+
+### Configuration
+- **API Base URL:**
+  - Located in `com.example.smst2.data.ApiService` (or similar networking configuration).
+  - Must be updated to point to the deployed backend URL (e.g., `http://192.168.1.5/SPMDA/`).
+  - **Important:** Android requires cleartext traffic to be enabled in `AndroidManifest.xml` if using `http://` instead of `https://`.
+    ```xml
+    android:usesCleartextTraffic="true"
+    ```
+
+### Build Steps
+1. Open the project in Android Studio.
+2. Sync Project with Gradle Files.
+3. Update the `BASE_URL` in the Retrofit configuration to match your backend IP.
+4. Build > Build Bundle(s) / APK(s) > Build APK.
